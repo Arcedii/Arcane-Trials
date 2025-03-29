@@ -26,6 +26,9 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Collider2D groundCollider;
 
+    public GameObject PlayerCanvas;
+    public GameObject DethCanvas;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -40,6 +43,7 @@ public class PlayerController : MonoBehaviour
         if (jumpButton) jumpButton.onClick.AddListener(TryJump);
 
         groundCollider = isGroundedPoint.GetComponent<Collider2D>();
+        DethCanvas.gameObject.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -131,4 +135,22 @@ public class PlayerController : MonoBehaviour
         pointerUp.callback.AddListener((data) => { onUp(); });
         trigger.triggers.Add(pointerUp);
     }
+
+
+    private void Die()
+    {
+        animator.SetInteger("playerState", 3); // состояние смерти
+        PlayerCanvas.gameObject.SetActive(false); // отключаем управление
+        DethCanvas.gameObject.SetActive(true);
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
+        {
+            Die();
+        }
+    }
+
 }
