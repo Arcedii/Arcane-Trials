@@ -196,6 +196,11 @@ public class PlayerController : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.AddForce(Vector2.down * 7f, ForceMode2D.Impulse);
 
+        if (deathSprite != null)
+        {
+            spriteRenderer.sprite = deathSprite;
+        }
+
         StartCoroutine(FinalizeDeath());
     }
 
@@ -209,11 +214,6 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
         rb.isKinematic = true;
         rb.simulated = false;
-
-        if (deathSprite != null)
-        {
-            spriteRenderer.sprite = deathSprite;
-        }
     }
 
 
