@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -29,10 +30,20 @@ public class PlayerController : MonoBehaviour
     public GameObject PlayerCanvas;
     public GameObject DethCanvas;
 
+    
+    private bool isDead = false;
+
+    public Sprite deathSprite; // Спрайт, который будет показан при смерти
+    private SpriteRenderer spriteRenderer;
+
+
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
 
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
@@ -48,10 +59,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead) return; // не выполняем управление, если мёртв
         CheckGround();
         Move();
         Jump();
     }
+
 
     private void Move()
     {
@@ -139,11 +152,71 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        animator.SetInteger("playerState", 3); // состояние смерти
-        PlayerCanvas.gameObject.SetActive(false); // отключаем управление
-        DethCanvas.gameObject.SetActive(true);
+        if (isDead) return;
 
+        isDead = true;
+        PlayerCanvas.SetActive(false);
+        DethCanvas.SetActive(true);
+
+        animator.enabled = false;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true; // начнём с выключенной физики
+
+        StartCoroutine(DeathAnimationSequence());
     }
+
+
+    private IEnumerator DeathAnimationSequence()
+    {
+        // === 1. Взлет с вращением ===
+        float airTime = 0.6f;
+        float elapsed = 0f;
+
+        Vector2 jumpForce = new Vector2(0f, 5f); // вверх
+        Vector3 rotationPerSecond = new Vector3(0, 0, 720f); // быстрое вращение
+
+        while (elapsed < airTime)
+        {
+            transform.position += (Vector3)(jumpForce * Time.deltaTime);
+            transform.Rotate(rotationPerSecond * Time.deltaTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // === 2. Возврат в изначальное положение ===
+        transform.rotation = Quaternion.Euler(0f, facingRight ? 0f : 180f, 0f);
+
+        yield return new WaitForSeconds(0.1f); // небольшая пауза перед падением
+
+        // === 3. Падение вниз ===
+        rb.isKinematic = false;
+        rb.gravityScale = 3f;
+        rb.freezeRotation = false;
+
+        rb.velocity = Vector2.zero;
+        rb.AddForce(Vector2.down * 7f, ForceMode2D.Impulse);
+
+        StartCoroutine(FinalizeDeath());
+    }
+
+
+    private IEnumerator FinalizeDeath()
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.freezeRotation = true;
+        rb.isKinematic = true;
+        rb.simulated = false;
+
+        if (deathSprite != null)
+        {
+            spriteRenderer.sprite = deathSprite;
+        }
+    }
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

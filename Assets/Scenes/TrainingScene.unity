@@ -7602,6 +7602,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   PlayerCanvas: {fileID: 1759904426}
   DethCanvas: {fileID: 545075845}
+  deathSprite: {fileID: 21300000, guid: 0e5b5eda3ff6d39418149746659dfb5e, type: 3}
 --- !u!4 &1262459614 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6952628394585513801, guid: a3dc7dd79a2fbc341a3fc828503f1ca9, type: 3}
