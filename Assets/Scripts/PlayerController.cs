@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
         DethCanvas.SetActive(true);
 
         animator.enabled = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.isKinematic = true; // начнём с выключенной физики
 
         StartCoroutine(DeathAnimationSequence());
@@ -193,7 +193,7 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 3f;
         rb.freezeRotation = false;
 
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.AddForce(Vector2.down * 7f, ForceMode2D.Impulse);
 
         if (deathSprite != null)
@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
 
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         rb.freezeRotation = true;
         rb.isKinematic = true;
