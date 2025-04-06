@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StarsController : MonoBehaviour
 {
-    public static int StarsCount = 0;
+    public static byte StarsCount = 0;
 
     public GameObject StarOff1;
     public GameObject StarOff2;
